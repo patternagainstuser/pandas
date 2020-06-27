@@ -18,6 +18,8 @@ Working with options
    set_option
    option_context
 
+.. _api.general.testing:
+
 Testing functions
 -----------------
 .. autosummary::
@@ -26,14 +28,20 @@ Testing functions
    testing.assert_frame_equal
    testing.assert_series_equal
    testing.assert_index_equal
+   testing.assert_extension_array_equal
 
 Exceptions and warnings
 -----------------------
 .. autosummary::
    :toctree: api/
 
+   errors.AccessorRegistrationWarning
    errors.DtypeWarning
    errors.EmptyDataError
+   errors.InvalidIndexError
+   errors.MergeError
+   errors.NullFrequencyError
+   errors.NumbaUtilError
    errors.OutOfBoundsDatetime
    errors.ParserError
    errors.ParserWarning
@@ -105,3 +113,11 @@ Scalar introspection
     api.types.is_re
     api.types.is_re_compilable
     api.types.is_scalar
+
+Bug report function
+-------------------
+.. autosummary::
+   :toctree: api/
+
+   show_versions
+

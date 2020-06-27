@@ -33,7 +33,7 @@ Copyright (c) 2007  Nick Galbreath -- nickg [at] modp [dot] com. All rights
 reserved.
 
 Numeric decoder derived from from TCL library
-http://www.opensource.apple.com/source/tcl/tcl-14/tcl/license.terms
+https://www.opensource.apple.com/source/tcl/tcl-14/tcl/license.terms
  * Copyright (c) 1988-1993 The Regents of the University of California.
  * Copyright (c) 1994 Sun Microsystems, Inc.
 */
@@ -1106,6 +1106,35 @@ void encode(JSOBJ obj, JSONObjectEncoder *enc, const char *name,
 
             Buffer_AppendCharUnchecked(enc, '\"');
             break;
+        }
+
+        case JT_BIGNUM: {
+            value = enc->getBigNumStringValue(obj, &tc, &szlen);
+
+            Buffer_Reserve(enc, RESERVE_STRING(szlen));
+            if (enc->errorMsg) {
+                enc->endTypeContext(obj, &tc);
+                return;
+            }
+
+            if (enc->forceASCII) {
+                if (!Buffer_EscapeStringValidated(obj, enc, value,
+                                                  value + szlen)) {
+                    enc->endTypeContext(obj, &tc);
+                    enc->level--;
+                    return;
+                }
+            } else {
+                if (!Buffer_EscapeStringUnvalidated(enc, value,
+                                                    value + szlen)) {
+                    enc->endTypeContext(obj, &tc);
+                    enc->level--;
+                    return;
+                }
+            }
+
+            break;
+            
         }
     }
 

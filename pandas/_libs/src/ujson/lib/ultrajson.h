@@ -30,7 +30,7 @@ https://github.com/client9/stringencoders
 Copyright (c) 2007  Nick Galbreath -- nickg [at] modp [dot] com. All rights reserved.
 
 Numeric decoder derived from from TCL library
-http://www.opensource.apple.com/source/tcl/tcl-14/tcl/license.terms
+https://www.opensource.apple.com/source/tcl/tcl-14/tcl/license.terms
  * Copyright (c) 1988-1993 The Regents of the University of California.
  * Copyright (c) 1994 Sun Microsystems, Inc.
 */
@@ -108,7 +108,7 @@ typedef uint32_t JSUINT32;
 
 #define FASTCALL_MSVC
 
-#if !defined __x86_64__
+#if !defined __x86_64__ && !defined __aarch64__
 #define FASTCALL_ATTR __attribute__((fastcall))
 #else
 #define FASTCALL_ATTR
@@ -150,10 +150,13 @@ enum JSTYPES {
   JT_INT,      // (JSINT32 (signed 32-bit))
   JT_LONG,     // (JSINT64 (signed 64-bit))
   JT_DOUBLE,   // (double)
+  JT_BIGNUM,   // integer larger than sys.maxsize
   JT_UTF8,     // (char 8-bit)
   JT_ARRAY,    // Array structure
   JT_OBJECT,   // Key/Value structure
   JT_INVALID,  // Internal, do not return nor expect
+  JT_POS_INF,  // Positive infinity
+  JT_NEG_INF,  // Negative infinity
 };
 
 typedef void * JSOBJ;
@@ -185,6 +188,8 @@ typedef struct __JSONObjectEncoder {
   JSINT64 (*getLongValue)(JSOBJ obj, JSONTypeContext *tc);
   JSINT32 (*getIntValue)(JSOBJ obj, JSONTypeContext *tc);
   double (*getDoubleValue)(JSOBJ obj, JSONTypeContext *tc);
+  const char *(*getBigNumStringValue)(JSOBJ obj, JSONTypeContext *tc,
+                                size_t *_outLen);
 
   /*
   Begin iteration of an iteratable object (JS_ARRAY or JS_OBJECT)
@@ -290,6 +295,8 @@ typedef struct __JSONObjectDecoder {
   JSOBJ (*newTrue)(void *prv);
   JSOBJ (*newFalse)(void *prv);
   JSOBJ (*newNull)(void *prv);
+  JSOBJ (*newPosInf)(void *prv);
+  JSOBJ (*newNegInf)(void *prv);
   JSOBJ (*newObject)(void *prv, void *decoder);
   JSOBJ (*endObject)(void *prv, JSOBJ obj);
   JSOBJ (*newArray)(void *prv, void *decoder);

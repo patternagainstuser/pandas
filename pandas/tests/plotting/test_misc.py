@@ -1,5 +1,3 @@
-# coding: utf-8
-
 """ Test cases for misc plot functions """
 
 import numpy as np
@@ -10,8 +8,8 @@ import pytest
 import pandas.util._test_decorators as td
 
 from pandas import DataFrame, Series
+import pandas._testing as tm
 from pandas.tests.plotting.common import TestPlotBase, _check_plot_works
-import pandas.util.testing as tm
 
 import pandas.plotting as plotting
 
@@ -56,7 +54,7 @@ def test_get_accessor_args():
     assert x is None
     assert y is None
     assert kind == "line"
-    assert len(kwargs) == 22
+    assert len(kwargs) == 24
 
 
 @td.skip_if_no_mpl
@@ -98,13 +96,17 @@ class TestSeriesPlots(TestPlotBase):
 class TestDataFramePlots(TestPlotBase):
     @td.skip_if_no_scipy
     def test_scatter_matrix_axis(self):
+        from pandas.plotting._matplotlib.compat import _mpl_ge_3_0_0
+
         scatter_matrix = plotting.scatter_matrix
 
         with tm.RNGContext(42):
             df = DataFrame(randn(100, 3))
 
         # we are plotting multiples on a sub-plot
-        with tm.assert_produces_warning(UserWarning):
+        with tm.assert_produces_warning(
+            UserWarning, raise_on_extra_warnings=_mpl_ge_3_0_0()
+        ):
             axes = _check_plot_works(
                 scatter_matrix, filterwarnings="always", frame=df, range_padding=0.1
             )
@@ -319,8 +321,8 @@ class TestDataFramePlots(TestPlotBase):
 
         # Case len(title) > len(df)
         msg = (
-            "The length of `title` must equal the number of columns if"
-            " using `title` of type `list` and `subplots=True`"
+            "The length of `title` must equal the number of columns if "
+            "using `title` of type `list` and `subplots=True`"
         )
         with pytest.raises(ValueError, match=msg):
             df.plot(subplots=True, title=title + ["kittens > puppies"])
@@ -331,8 +333,8 @@ class TestDataFramePlots(TestPlotBase):
 
         # Case subplots=False and title is of type list
         msg = (
-            "Using `title` of type `list` is not supported unless"
-            " `subplots=True` is passed"
+            "Using `title` of type `list` is not supported unless "
+            "`subplots=True` is passed"
         )
         with pytest.raises(ValueError, match=msg):
             df.plot(subplots=False, title=title)
@@ -406,3 +408,24 @@ class TestDataFramePlots(TestPlotBase):
         color_list = cm.gnuplot(np.linspace(0, 1, 16))
         p = df.A.plot.bar(figsize=(16, 7), color=color_list)
         assert p.patches[1].get_facecolor() == p.patches[17].get_facecolor()
+
+    @pytest.mark.slow
+    def test_dictionary_color(self):
+        # issue-8193
+        # Test plot color dictionary format
+        data_files = ["a", "b"]
+
+        expected = [(0.5, 0.24, 0.6), (0.3, 0.7, 0.7)]
+
+        df1 = DataFrame(np.random.rand(2, 2), columns=data_files)
+        dic_color = {"b": (0.3, 0.7, 0.7), "a": (0.5, 0.24, 0.6)}
+
+        # Bar color test
+        ax = df1.plot(kind="bar", color=dic_color)
+        colors = [rect.get_facecolor()[0:-1] for rect in ax.get_children()[0:3:2]]
+        assert all(color == expected[index] for index, color in enumerate(colors))
+
+        # Line color test
+        ax = df1.plot(kind="line", color=dic_color)
+        colors = [rect.get_color() for rect in ax.get_lines()[0:2]]
+        assert all(color == expected[index] for index, color in enumerate(colors))

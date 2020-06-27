@@ -28,6 +28,7 @@ Attributes and underlying data
    :toctree: api/
 
    DataFrame.dtypes
+   DataFrame.info
    DataFrame.select_dtypes
    DataFrame.values
    DataFrame.axes
@@ -43,10 +44,9 @@ Conversion
    :toctree: api/
 
    DataFrame.astype
+   DataFrame.convert_dtypes
    DataFrame.infer_objects
    DataFrame.copy
-   DataFrame.isna
-   DataFrame.notna
    DataFrame.bool
 
 Indexing, iteration
@@ -168,6 +168,7 @@ Computations / descriptive stats
    DataFrame.std
    DataFrame.var
    DataFrame.nunique
+   DataFrame.value_counts
 
 Reindexing / selection / label manipulation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -208,10 +209,18 @@ Missing data handling
 .. autosummary::
    :toctree: api/
 
+   DataFrame.backfill
+   DataFrame.bfill
    DataFrame.dropna
+   DataFrame.ffill
    DataFrame.fillna
-   DataFrame.replace
    DataFrame.interpolate
+   DataFrame.isna
+   DataFrame.isnull
+   DataFrame.notna
+   DataFrame.notnull
+   DataFrame.pad
+   DataFrame.replace
 
 Reshaping, sorting, transposing
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -237,18 +246,19 @@ Reshaping, sorting, transposing
    DataFrame.T
    DataFrame.transpose
 
-Combining / joining / merging
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Combining / comparing / joining / merging
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 .. autosummary::
    :toctree: api/
 
    DataFrame.append
    DataFrame.assign
+   DataFrame.compare
    DataFrame.join
    DataFrame.merge
    DataFrame.update
 
-Time series-related
+Time Series-related
 ~~~~~~~~~~~~~~~~~~~
 .. autosummary::
    :toctree: api/
@@ -272,6 +282,8 @@ Metadata
 ~~~~~~~~
 
 :attr:`DataFrame.attrs` is a dictionary for storing global metadata for this DataFrame.
+
+.. warning:: ``DataFrame.attrs`` is considered experimental and may change without warning.
 
 .. autosummary::
    :toctree: api/
@@ -344,7 +356,6 @@ Serialization / IO / conversion
 
    DataFrame.from_dict
    DataFrame.from_records
-   DataFrame.info
    DataFrame.to_parquet
    DataFrame.to_pickle
    DataFrame.to_csv

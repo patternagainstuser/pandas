@@ -46,6 +46,7 @@ Conversion
    :toctree: api/
 
    Series.astype
+   Series.convert_dtypes
    Series.infer_objects
    Series.copy
    Series.bool
@@ -109,7 +110,7 @@ Binary operator functions
    Series.product
    Series.dot
 
-Function application, groupby & window
+Function application, GroupBy & window
 --------------------------------------
 .. autosummary::
    :toctree: api/
@@ -213,11 +214,18 @@ Missing data handling
 .. autosummary::
    :toctree: api/
 
-   Series.isna
-   Series.notna
+   Series.backfill
+   Series.bfill
    Series.dropna
+   Series.ffill
    Series.fillna
    Series.interpolate
+   Series.isna
+   Series.isnull
+   Series.notna
+   Series.notnull
+   Series.pad
+   Series.replace
 
 Reshaping, sorting
 ------------------
@@ -239,16 +247,17 @@ Reshaping, sorting
    Series.squeeze
    Series.view
 
-Combining / joining / merging
------------------------------
+Combining / comparing / joining / merging
+-----------------------------------------
 .. autosummary::
    :toctree: api/
 
    Series.append
+   Series.compare
    Series.replace
    Series.update
 
-Time series-related
+Time Series-related
 -------------------
 .. autosummary::
    :toctree: api/
@@ -524,6 +533,8 @@ Metadata
 ~~~~~~~~
 
 :attr:`Series.attrs` is a dictionary for storing global metadata for this Series.
+
+.. warning:: ``Series.attrs`` is considered experimental and may change without warning.
 
 .. autosummary::
    :toctree: api/
